@@ -29,10 +29,28 @@ error InitializationFunctionReverted(address _initializationContractAddress, byt
 
 library LibDiamond {
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
+    uint8 constant INNER_STRUCT = 0;
 
     struct FacetAddressAndSelectorPosition {
         address facetAddress;
         uint16 selectorPosition;
+    }
+
+    struct ProjectConfig {
+        string name;    
+        string symbol;    
+        uint256 maxSupply;
+        uint256 price;    
+        uint256 maxTotalMints;    
+        uint256 maxMintTxns;    
+    }
+
+    struct VRFRequest {    
+        bool fulfilled;
+        bool exists;
+        bool isOffset;
+        uint256[] randomRange;
+        uint256[] randomWords;
     }
 
     struct DiamondStorage {
@@ -42,6 +60,10 @@ library LibDiamond {
         mapping(bytes4 => bool) supportedInterfaces;
         // owner of the contract
         address contractOwner;
+        // mapping constant for avoiding future issues when adding new ProjectConfig vars
+        uint8 INNER_STRUCT;
+        mapping(uint8 => ProjectConfig) project;
+        mapping(uint256 => VRFRequest) vrfRequest;
     }
 
     function diamondStorage() internal pure returns (DiamondStorage storage ds) {

@@ -2,6 +2,8 @@
 /* global ethers task */
 require('@nomiclabs/hardhat-waffle')
 require("hardhat-gas-reporter");
+require("dotenv").config();
+require("@nomicfoundation/hardhat-verify");
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -26,6 +28,26 @@ module.exports = {
       enabled: true,
       runs: 200
     }
+  },
+  networks: {
+    goerli: {
+      url: process.env.INFURA_GOERLI_API,
+      accounts: {
+        mnemonic: process.env.PASSPHRASE,
+      },
+      gasPrice: 20000000000,
+      gas: 6000000,
+    }
+  },
+  etherscan: {
+    apiKey: {      
+      goerli: process.env.ETHERSCAN_API_KEY,                  
+    }
+  },
+  sourcify: {
+    // Disabled by default
+    // Doesn't need an API key
+    enabled: true
   },
   gasReporter: {
     enabled: true

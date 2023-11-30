@@ -1,5 +1,7 @@
 /* global ethers */
 
+const { ethers } = require("hardhat")
+
 const FacetCutAction = { Add: 0, Replace: 1, Remove: 2 }
 
 // get function selectors from ABI
@@ -18,8 +20,8 @@ function getSelectors (contract) {
 }
 
 // get function selector from function signature
-function getSelector (func) {
-  const abiInterface = new ethers.utils.Interface([func])
+function getSelector (func) {  
+  const abiInterface = new ethers.utils.Interface([func])  
   return abiInterface.getSighash(ethers.utils.Fragment.from(func))
 }
 
@@ -74,9 +76,39 @@ function findAddressPositionInFacets (facetAddress, facets) {
   }
 }
 
+const getDeploymentProjectCalldata = () => {
+  // https://docs.ethers.org/v5/api/utils/abi/coder/#AbiCoder--methods
+  const abiCoder = new ethers.utils.AbiCoder()   
+  return abiCoder.encode(
+    [
+      `
+        tuple(
+          string name,
+          string symbol,
+          uint256 maxSupply,
+          uint256 price,
+          uint256 maxTotalMints,
+          uint256 maxMintTxns                          
+        )
+      `
+    ],
+    [      
+      {
+        name: "My Project",
+        symbol: "MP",
+        maxSupply: 100,
+        price: 0,
+        maxTotalMints: 0,
+        maxMintTxns: 0, 
+      }     
+    ]
+  )
+}
+
 exports.getSelectors = getSelectors
 exports.getSelector = getSelector
 exports.FacetCutAction = FacetCutAction
 exports.remove = remove
 exports.removeSelectors = removeSelectors
 exports.findAddressPositionInFacets = findAddressPositionInFacets
+exports.getDeploymentProjectCalldata = getDeploymentProjectCalldata

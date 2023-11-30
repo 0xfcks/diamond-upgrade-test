@@ -25,13 +25,23 @@ contract DiamondInit {
 
     // You can add parameters to this function in order to pass in 
     // data to set your own state variables
-    function init() external {
+    function init(bytes memory _calldata) external {
         // adding ERC165 data
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true;
+
+        // init ProjectConfig data
+        LibDiamond.ProjectConfig memory project = abi.decode(_calldata, (LibDiamond.ProjectConfig));
+
+        ds.project[LibDiamond.INNER_STRUCT].name = project.name;        
+        ds.project[LibDiamond.INNER_STRUCT].symbol = project.symbol;
+        ds.project[LibDiamond.INNER_STRUCT].maxSupply = project.maxSupply;        
+        ds.project[LibDiamond.INNER_STRUCT].price = project.price;    
+        ds.project[LibDiamond.INNER_STRUCT].maxTotalMints = project.maxTotalMints;    
+        ds.project[LibDiamond.INNER_STRUCT].maxMintTxns = project.maxMintTxns;    
 
         // add your own state variables 
         // EIP-2535 specifies that the `diamondCut` function takes two optional 

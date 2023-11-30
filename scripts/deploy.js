@@ -1,7 +1,7 @@
 /* global ethers */
 /* eslint prefer-const: "off" */
 
-const { getSelectors, FacetCutAction } = require('./libraries/diamond.js')
+const { getSelectors, FacetCutAction, getDeploymentProjectCalldata } = require('./libraries/diamond.js')
 
 async function deployDiamond () {
   const accounts = await ethers.getSigners()
@@ -21,7 +21,9 @@ async function deployDiamond () {
   const FacetNames = [
     'DiamondCutFacet',
     'DiamondLoupeFacet',
-    'OwnershipFacet'
+    'OwnershipFacet',
+    'ManagerTestFacet',
+    'Test1Facet'
   ]
   // The `facetCuts` variable is the FacetCut[] that contains the functions to add during diamond deployment
   const facetCuts = []
@@ -40,7 +42,9 @@ async function deployDiamond () {
   // Creating a function call
   // This call gets executed during deployment and can also be executed in upgrades
   // It is executed with delegatecall on the DiamondInit address.
-  let functionCall = diamondInit.interface.encodeFunctionData('init')
+  const calldata = getDeploymentProjectCalldata( config )
+  let functionCall = diamondInit.interface.encodeFunctionData("init(bytes)", [calldata]);
+  console.log(functionCall)
 
   // Setting arguments that will be used in the diamond constructor
   const diamondArgs = {
